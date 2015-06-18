@@ -42,17 +42,17 @@ module JiraCache
 
     def self.issue_keys_for_query(jql_query)
       start_at = 0
-      raw_issues = []
+      issues = []
       begin
         results = issue_ids_in_limits jql_query, start_at
         total_issues_count = results['total']
-        logger.info "Total number of issues: #{total_issues_count}" if raw_issues.length == 0
+        logger.info "Total number of issues: #{total_issues_count}" if issues.length == 0
         request_issues = results['issues']
-        raw_issues += request_issues
-        logger.info "  -- loaded #{raw_issues.length} issues"
+        issues += request_issues
+        logger.info "  -- loaded #{issues.length} issues"
         start_at += request_issues.length
-      end while raw_issues.length < total_issues_count
-      raw_issues.collect {|raw_issue| raw_issue['key']}
+      end while issues.length < total_issues_count
+      issues.collect {|issue| issue['key']}
     end
 
     def self.project_data(id)

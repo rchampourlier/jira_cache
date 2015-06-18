@@ -1,7 +1,6 @@
 require 'spec_helper'
-require 'data/raw_issue_document'
 
-describe AgileJira::Data::RawIssueDocument do
+describe JiraCache::Issue do
 
   let(:data1) { { 'key' => 'key1', 'value' => 'value1' } }
   let(:data2) { { 'key' => 'key2', 'value' => 'value2' } }
@@ -13,18 +12,18 @@ describe AgileJira::Data::RawIssueDocument do
     it { should eq(doc1) }
   end
 
-  describe '::create_or_update(raw_data)' do
+  describe '::create_or_update(issue_data)' do
     subject { described_class.create_or_update(data1).key }
     it { should eq(data1['key']) }
   end
 
-  describe '::set_deleted_from_jira_for_key(issue_key)' do
+  describe '::deleted_from_jira!(issue_key)' do
     let(:key) { 'key' }
     let(:doc) { described_class.create(key: key, data: data1) }
 
     it 'should set "deleted_from_jira_at" to current time' do
       expect(doc.deleted_from_jira_at).to be_nil
-      described_class.set_deleted_from_jira_for_key(key)
+      described_class.deleted_from_jira!(key)
       doc.reload
       expect(doc.deleted_from_jira_at > 1.minute.ago).to be true
     end

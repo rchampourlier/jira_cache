@@ -1,12 +1,11 @@
-require 'process'
-require 'sync'
+require 'mongoid'
 
 module JiraCache
-  class Document
+  class Issue
     include Mongoid::Document
     include Mongoid::Timestamps
 
-    store_in collection: 'raw_issues'
+    store_in collection: 'issues'
 
     field :key,  type: String
     field :data, type: Hash
@@ -16,22 +15,25 @@ module JiraCache
       where(key: issue_key).first
     end
 
-    def self.create_or_update(raw_data)
-      issue_key = Process.read raw_data, 'key'
+    def self.create_or_update(issue_data)
+      issue_key = issue_data['key']
       doc = find_by_key(issue_key)
-      doc ||= self.new
+      doc ||= new
       doc.key = issue_key
-      doc.data = raw_data
+      doc.data = issue_data
       doc.save!
       doc
     end
 
-    def self.set_deleted_from_jira_for_key(issue_key)
-      issue = self.find_by_key(issue_key)
+    def self.deleted_from_jira!(issue_key)
+      issue = find_by_key(issue_key)
+      require 'pry'
       issue.deleted_from_jira_at = Time.now
       issue.save!
     end
 
+    # @param project_key [String] key of the JIRA project
+    # @param deleted_from_jira [Boolean] include cached issues deleted from JIRA
     def self.keys(project_key: nil, deleted_from_jira: nil)
       criteria = {}
 
@@ -39,12 +41,12 @@ module JiraCache
         project_key: { :$eq => project_key }
       ) if project_key
 
-      criteria.merge!(
-        # TODO add the appropriate query criteria
-        #deleted_from_jira_at:
-      ) if deleted_from_jira
+      criteria.merge!({
+        # TODO: add the appropriate query criteria
+        # deleted_from_jira_at:
+      }) if deleted_from_jira
 
-      self.only('key').map(&:key)
+      only('key').map(&:key)
     end
   end
 end
