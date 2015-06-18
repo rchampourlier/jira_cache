@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
-
+# Load dependencies
+require 'rubygems'
 require "bundler/setup"
 
 $LOAD_PATH.unshift File.expand_path('../..', __FILE__)

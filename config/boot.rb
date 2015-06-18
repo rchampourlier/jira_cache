@@ -1,6 +1,3 @@
-# Load dependencies
-require 'rubygems'
-require 'bundler/setup'
 env = ENV['JIRA_CACHE_ENV'] || 'development'
 if env == 'development'
   require 'dotenv'

@@ -1,8 +1,13 @@
-$LOAD_PATH.unshift File.expand_path('../..', __FILE__)
-require 'config/boot'
+# Load dependencies
+require 'rubygems'
+require 'bundler/setup'
 
+# Setup Coveralls
 require 'coveralls'
 Coveralls.wear!
+
+$LOAD_PATH.unshift File.expand_path('../..', __FILE__)
+require 'config/boot'
 
 require 'lib/jira_cache'
 
