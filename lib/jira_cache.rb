@@ -73,7 +73,6 @@ module JiraCache
 
   def mark_deleted(issue_keys)
     issue_keys.each do |issue_key|
-      require 'pry'; binding.pry if issue_key.nil?
       Issue.deleted_from_jira! issue_key
     end
   end

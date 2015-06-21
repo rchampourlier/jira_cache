@@ -63,8 +63,6 @@ module JiraCache
       do_get '/project', options
     end
 
-    private
-
     def self.do_get(path, options)
       logger.debug "GET #{path} #{options}"
       get path, options
