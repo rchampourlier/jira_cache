@@ -1,6 +1,6 @@
 require 'jira_cache/version'
 require 'jira_cache/issue'
-require 'jira_cache/state'
+require 'jira_cache/project_state'
 require 'jira_cache/client'
 
 # Facility to store/cache JIRA issues data in a MongoDB datastore.
@@ -20,10 +20,9 @@ module JiraCache
     remote = remote_keys(project_key)
     cached = cached_keys(project_key)
     missing = missing_keys(remote, cached)
-    fetch_issues(missing)
-
     updated = updated_keys(project_key)
-    fetch_issues(updated)
+
+    fetch_issues(missing + updated)
 
     deleted = cached - remote
     mark_deleted(deleted)
@@ -83,12 +82,12 @@ module JiraCache
   # Sync
 
   def synced_project!(project_key, sync_time)
-    State.synced_project! project_key, sync_time
+    ProjectState.synced_project! project_key, sync_time
   end
   module_function :synced_project!
 
   def last_sync_time(project_key)
-    State.project_sync_time(project_key)
+    ProjectState.sync_time(project_key)
   end
   module_function :last_sync_time
 end
