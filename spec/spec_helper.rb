@@ -10,11 +10,17 @@ else
   # Running locally, setup simplecov
   require 'simplecov'
   require 'simplecov-json'
-  SimpleCov.start
+  SimpleCov.start do
+    add_filter do |src|
+      # Ignoring files from the spec directory
+      src.filename =~ %r{/spec/}
+    end
+  end
   SimpleCov.formatter = SimpleCov::Formatter::JSONFormatter
 end
 
-$LOAD_PATH.unshift File.expand_path('../..', __FILE__)
+$LOAD_PATH.unshift File.expand_path('../..', __FILE__) # root
+$LOAD_PATH.unshift File.expand_path('../../spec', __FILE__)
 require 'config/boot'
 
 require 'lib/jira_cache'

@@ -1,6 +1,8 @@
 require 'mongoid'
 
 module JiraCache
+
+  # Document to store JIRA issue data.
   class Issue
     include Mongoid::Document
     include Mongoid::Timestamps

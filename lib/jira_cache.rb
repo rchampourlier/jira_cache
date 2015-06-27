@@ -54,6 +54,13 @@ module JiraCache
 
   # Fetch from JIRA
 
+  # Fetch issue keys from JIRA using `JiraCache::Client`
+  # for the specified project, with an optional `updated_since`
+  # parameter.
+  #
+  # @param project_key [String]
+  # @param updated_since [Time]
+  # @return [Array] array of issue keys as strings
   def fetch_issue_keys(project_key, updated_since: nil)
     jql_query = "project = \"#{project_key}\""
     jql_query << " AND updatedDate > \"#{updated_since.strftime('%Y-%m-%d %H:%M')}\"" if updated_since
