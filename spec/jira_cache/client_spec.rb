@@ -84,11 +84,13 @@ describe JiraCache::Client do
         url = "https://#{username}:#{password}@#{domain}/rest/api/2/search"
         url_query_1 = "?fields=id&jql=#{jql_query}&maxResults=1000&startAt=0"
         url_query_2 = "?fields=id&jql=#{jql_query}&maxResults=1000&startAt=5"
+        url_query_3 = "?fields=id&jql=#{jql_query}&maxResults=1000&startAt=10"
         headers = { 'Content-Type' => 'application/json' }
 
         response_fixture_prefix = 'get_issue_keys_jql_query_project="multiple_requests"_start_at_'
         response_1 = ResponseFixture.get("#{response_fixture_prefix}0")
         response_2 = ResponseFixture.get("#{response_fixture_prefix}5")
+        response_3 = ResponseFixture.get("#{response_fixture_prefix}10")
 
         stub_request(:get, "#{url}#{url_query_1}")
           .with(headers: headers)
@@ -96,9 +98,12 @@ describe JiraCache::Client do
         stub_request(:get, "#{url}#{url_query_2}")
           .with(headers: headers)
           .to_return(status: 200, body: response_2, headers: headers)
+        stub_request(:get, "#{url}#{url_query_3}")
+          .with(headers: headers)
+          .to_return(status: 200, body: response_3, headers: headers)
 
         result = described_class.issue_keys_for_query(jql_query)
-        expect(result.count).to eq(6)
+        expect(result.count).to eq(11)
       end
     end
   end

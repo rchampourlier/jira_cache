@@ -38,7 +38,7 @@ module JiraCache
         logger.info "Total number of issues: #{total}" if issues.length == 0
         issues += page_issues
         logger.info "  -- loaded #{page_issues.length} issues"
-        start_at = page_issues.length
+        start_at = issues.length
         break if issues.length == total
       end
       issues.collect { |issue| issue['key'] }
