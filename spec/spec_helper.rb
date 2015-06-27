@@ -2,9 +2,17 @@
 require 'rubygems'
 require 'bundler/setup'
 
-# Setup Coveralls
-require 'coveralls'
-Coveralls.wear!
+if ENV['CI']
+  # Running on CI, setup Coveralls
+  require 'coveralls'
+  Coveralls.wear!
+else
+  # Running locally, setup simplecov
+  require 'simplecov'
+  require 'simplecov-json'
+  SimpleCov.start
+  SimpleCov.formatter = SimpleCov::Formatter::JSONFormatter
+end
 
 $LOAD_PATH.unshift File.expand_path('../..', __FILE__)
 require 'config/boot'
