@@ -5,8 +5,8 @@ describe JiraCache do
   before do
     # Stubbing out some methods which we can ignore in the context
     # of these specs.
-    JiraCache::Client.stub(issue_data: {})
-    JiraCache::Issue.stub(deleted_from_jira!: true)
+    allow(JiraCache::Client).to receive(:issue_data).and_return({})
+    allow(JiraCache::Issue).to receive(:deleted_from_jira!).and_return(true)
   end
 
   it 'has a version number' do
