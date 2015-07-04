@@ -2,10 +2,10 @@
 
 # Load dependencies
 require 'rubygems'
-require "bundler/setup"
+require 'bundler/setup'
 
 $LOAD_PATH.unshift File.expand_path('../..', __FILE__)
-require "config/boot"
+require 'config/boot'
 
-require "pry"
+require 'pry'
 Pry.start
