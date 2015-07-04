@@ -29,7 +29,7 @@ describe JiraCache do
         .and_return(remote_keys)
       expect(described_class)
         .to receive(:cached_keys)
-        .with(client, project_key)
+        .with(project_key)
         .and_return(cached_keys)
       expect(described_class)
         .to receive(:updated_keys)

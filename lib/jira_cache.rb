@@ -20,7 +20,7 @@ module JiraCache
     sync_start = Time.now
 
     remote = remote_keys(client, project_key)
-    cached = cached_keys(client, project_key)
+    cached = cached_keys(project_key)
     missing = remote - cached
     updated = updated_keys(client, project_key)
 

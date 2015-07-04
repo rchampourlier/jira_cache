@@ -126,11 +126,12 @@ module JiraCache
 
     # Returns the JIRA API's base URI (build using `config[:domain]`)
     def uri(path)
-      if @username && @password
-        "https://#{@username}:#{@password}@#{@domain}/rest/api/2#{path}"
-      else
-        "https://#{@domain}/rest/api/2#{path}"
-      end
+      "https://#{authorization_prefix}#{@domain}/rest/api/2#{path}"
+    end
+
+    def authorization_prefix
+      return '' if @username.blank? || @password.blank?
+      "#{CGI.escape(@username)}:#{CGI.escape(@password)}@"
     end
 
     def default_logger
