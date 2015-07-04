@@ -7,12 +7,18 @@ describe JiraCache::Client do
   let(:domain) { 'example.com' }
   let(:username) { 'username' }
   let(:password) { 'password' }
+  let(:notifier) { nil }
 
-  before do
-    described_class.set_config(domain: domain, username: username, password: password)
+  let(:client) do
+    described_class.new(
+      domain: domain,
+      username: username,
+      password: password,
+      notifier: notifier
+    )
   end
 
-  describe '::issue_data(id_or_key)' do
+  describe '#issue_data(id_or_key)' do
     let(:response) { ResponseFixture.get("get_issue_#{issue_key}")}
     let(:headers) { { 'Content-Type' => 'application/json' } }
     let(:url) { "https://#{username}:#{password}@#{domain}/rest/api/2/issue/#{issue_key}" }
@@ -27,7 +33,7 @@ describe JiraCache::Client do
       let(:issue_key) { 'not_found' }
 
       it 'returns nil' do
-        result = described_class.issue_data(issue_key)
+        result = client.issue_data(issue_key)
         expect(result).to be_nil
       end
     end
@@ -35,18 +41,16 @@ describe JiraCache::Client do
     context 'simple issue' do
       let(:issue_key) { 'simple' }
       let(:notifier) { double('Notifier', publish: nil) }
-      before { described_class.set_notifier(notifier) }
-      after { described_class.set_notifier(nil) }
       let(:issue_data) { JSON.parse(response) }
 
       it 'fetches the issue data' do
-        result = described_class.issue_data(issue_key)
+        result = client.issue_data(issue_key)
         expect(result.keys).to include('fields')
       end
 
       it 'publish an event through the notifier' do
         expect(notifier).to receive(:publish).with('jira_cache:fetched_issue', key: issue_key, data: issue_data)
-        described_class.issue_data(issue_key)
+        client.issue_data(issue_key)
       end
     end
 
@@ -59,13 +63,13 @@ describe JiraCache::Client do
           .with(headers: headers)
           .to_return(status: 200, body: worklog_response, headers: headers)
 
-        result = described_class.issue_data(issue_key)
+        result = client.issue_data(issue_key)
         expect(result['fields']['worklog']['worklogs'].count).to eq(3)
       end
     end
   end
 
-  describe '::issue_keys_for_query(jql_query)' do
+  describe '#issue_keys_for_query(jql_query)' do
 
     context 'single request query' do
       let(:jql_query) { 'project="single_request"' }
@@ -81,7 +85,7 @@ describe JiraCache::Client do
           .with(headers: headers)
           .to_return(status: 200, body: response, headers: headers)
 
-        result = described_class.issue_keys_for_query(jql_query)
+        result = client.issue_keys_for_query(jql_query)
         expect(result.count).to eq(2)
       end
     end
@@ -111,7 +115,7 @@ describe JiraCache::Client do
           .with(headers: headers)
           .to_return(status: 200, body: response_3, headers: headers)
 
-        result = described_class.issue_keys_for_query(jql_query)
+        result = client.issue_keys_for_query(jql_query)
         expect(result.count).to eq(11)
       end
     end

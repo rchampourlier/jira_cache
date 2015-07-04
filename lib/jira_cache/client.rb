@@ -1,13 +1,11 @@
-require 'httparty'
-require 'cgi'
+require 'rest-client'
+require 'base64'
 require 'jira_cache/notifier'
 
 module JiraCache
 
   # The JIRA API Client.
   class Client
-    include HTTParty
-
     JIRA_MAX_RESULTS = 1000
 
     EXPANDED_FIELDS = %w(
@@ -16,11 +14,27 @@ module JiraCache
     )
     # Other possible fields: names, schema, operations, editmeta
 
-    # Returns the config. If the config was not set using
-    # #set_config, an exception is raised.
-    def self.config
-      fail 'Config not set. Please set config first (JiraCache::Client.config=...).' if @config.nil?
-      @config
+    attr_reader :logger, :notifier
+
+    # Returns a new instance of the client, configured with
+    # the specified parameters.
+    #
+    # @param domain [String] JIRA API domain (e.g. your-project.atlassian.net)
+    # @param username [String] JIRA user's name, if required
+    # @param password [String] JIRA user's password, if required
+    # @param logger [Logger] used to log message (defaults to a logger to STDOUT at
+    #   info level)
+    # @param notifier [Notifier] a notifier instance that will be used to publish
+    #   event notifications (see `JiraCache::Notifier` for more information)
+    #
+    def initialize(domain:, username: nil, password: nil, notifier: nil, logger: nil)
+      fail 'Missing domain' if domain.blank?
+      fail 'Missing password (mandatory if username given)' if username.present? && password.blank?
+      @domain = domain
+      @username = username
+      @password = password
+      @logger = logger || default_logger
+      @notifier = notifier || JiraCache::Notifier.new(@logger)
     end
 
     # Fetches the issue represented by id_or_key from the
@@ -28,20 +42,18 @@ module JiraCache
     # If the data is already present in the cache,
     # returns the cached version, unless if :allow_cache
     # option is false.
-    def self.issue_data(id_or_key)
+    def issue_data(id_or_key)
       logger.info "Fetching data for issue #{id_or_key}"
-      issue_data = do_get("/issue/#{id_or_key}", options.merge(
-        query: {
-          expand: EXPANDED_FIELDS.join(',')
-        }
-      )).to_hash
+      issue_data = do_get("/issue/#{id_or_key}",
+        expand: EXPANDED_FIELDS.join(',')
+      ).to_hash
       return nil if issue_not_found?(issue_data)
       issue_data = complete_worklogs(id_or_key, issue_data)
       notifier.publish 'jira_cache:fetched_issue', key: id_or_key, data: issue_data
       issue_data
     end
 
-    def self.issue_keys_for_query(jql_query)
+    def issue_keys_for_query(jql_query)
       start_at = 0
       issues = []
       loop do
@@ -58,109 +70,73 @@ module JiraCache
     # Implementation methods
     # ======================
 
-    def self.issue_not_found?(issue_data)
+    # @return [total, issues]
+    #   - total: [Int] the total number of issues in the query results
+    #   - issues: [Array] array of issues in the response
+    #     (max `JIRA_MAX_RESULTS`)
+    def issue_ids_in_limits(jql_query, start_at)
+      results = do_get '/search',
+        jql: jql_query,
+        startAt: start_at,
+        fields: 'id',
+        maxResults: JIRA_MAX_RESULTS
+      [results['total'], results['issues']]
+    end
+
+    def issue_not_found?(issue_data)
       return false if issue_data['errorMessages'].nil?
       issue_data['errorMessages'].first == 'Issue Does Not Exist'
     end
 
-    def self.complete_worklogs(id_or_key, issue_data)
+    def complete_worklogs(id_or_key, issue_data)
       if incomplete_worklogs?(issue_data)
         issue_data['fields']['worklog'] = issue_worklog_content(id_or_key)
       end
       issue_data
     end
 
-    def self.incomplete_worklogs?(issue_data)
+    def incomplete_worklogs?(issue_data)
       worklog = issue_data['fields']['worklog']
       worklog['total'].to_i > worklog['maxResults'].to_i
     end
 
-    def self.issue_worklog_content(id_or_key)
-      do_get("/issue/#{id_or_key}/worklog", options).to_hash
+    def issue_worklog_content(id_or_key)
+      do_get("/issue/#{id_or_key}/worklog").to_hash
     end
 
-    def self.project_data(id)
-      do_get "/project/#{id}", options
+    def project_data(id)
+      do_get "/project/#{id}"
     end
 
-    def self.projects_data
-      do_get '/project', options
+    def projects_data
+      do_get '/project'
     end
 
-    def self.do_get(path, options)
-      logger.debug "GET #{path} #{options}"
-      get path, options
+    def do_get(path, params = {})
+      logger.debug "GET #{uri(path)} #{params}"
+      response = RestClient.get uri(path),
+        params: params,
+        content_type: 'application/json'
+      begin
+        JSON.parse(response.body)
+      rescue JSON::ParseError
+        response.body
+      end
     end
 
-    # @return [total, issues]
-    #   - total: [Int] the total number of issues in the query results
-    #   - issues: [Array] array of issues in the response
-    #     (max `JIRA_MAX_RESULTS`)
-    def self.issue_ids_in_limits(jql_query, start_at)
-      results = do_get '/search', options.merge(
-        query: {
-          jql: jql_query,
-          startAt: start_at,
-          fields: 'id',
-          maxResults: JIRA_MAX_RESULTS
-        }
-      )
-      [results['total'], results['issues']]
+    # Returns the JIRA API's base URI (build using `config[:domain]`)
+    def uri(path)
+      if @username && @password
+        "https://#{@username}:#{@password}@#{@domain}/rest/api/2#{path}"
+      else
+        "https://#{@domain}/rest/api/2#{path}"
+      end
     end
 
-    def self.options
-      options = {
-        headers: {
-          'Content-Type' => 'application/json'
-        },
-        verify: false
-      }
-      return options if config[:username].blank?
-      options.merge({
-        basic_auth: {
-          username: config[:username],
-          password: config[:password]
-        }
-      })
-    end
-
-    # @param config [Hash] config hash, with the following key-values:
-    #   - :domain => [String] domain of the JIRA API to be requested
-    #   - :username => [String] JIRA username (optional, defaults to nil)
-    #   - :password => [String] JIRA password for the specified user (optional, default to nil)
-    #   - :log_level => [::Logger::LOG_LEVEL] (optional, defaults to Logger::FATAL)
-    def self.set_config(domain:, username: nil, password: nil, log_level: ::Logger::FATAL)
-      fail 'Missing domain' if domain.blank?
-      base_uri "https://#{domain}/rest/api/2"
-      @config = {
-        domain: domain,
-        username: username,
-        password: password,
-        log_level: log_level
-      }
-    end
-
-    # @param notifier [Object] the passed object must implement the notifier contract
-    #   (see `JiraCache::Notifier`).
-    def self.set_notifier(notifier)
-      @notifier = notifier
-    end
-
-    def self.logger
-      @logger ||= (
-        logger = ::Logger.new(STDOUT)
-        logger.level = config[:log_level] || ::Logger::FATAL
-        logger
-      )
-    end
-
-    # Returns a notifier, which will be used to send some events
-    # (currently only "jira_cache:fetched_issue").
-    # For now, this method only returns an instance of JiraCache::Notifier,
-    # which uses ActiveSupport::Notifications.
-    # @return [JiraCache::Notifier]
-    def self.notifier
-      @notifier ||= JiraCache::Notifier.new(logger)
+    def default_logger
+      logger = ::Logger.new(STDOUT)
+      logger.level = ::Logger::FATAL
+      logger
     end
   end
 end

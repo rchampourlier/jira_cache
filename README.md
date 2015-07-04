@@ -29,13 +29,15 @@ Or install it yourself as:
 Inside of `bin/console`:
 
 ```ruby
-JiraCache::Client.set_config(
+logger = Logger.new(STDOUT)
+logger.level = Logger::DEBUG
+client = JiraCache::Client.new(
   domain: 'example.atlassian.net',
   username: 'username',
   password: 'password',
-  log_level: Logger::DEBUG
+  logger: logger
 )
-JiraCache.sync_issue('PROJECT_KEY')
+JiraCache.sync_issue(client, 'PROJECT_KEY')
 ```
 
 ## Advanced use
