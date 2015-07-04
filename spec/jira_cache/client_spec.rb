@@ -34,10 +34,19 @@ describe JiraCache::Client do
 
     context 'simple issue' do
       let(:issue_key) { 'simple' }
+      let(:notifier) { double('Notifier', publish: nil) }
+      before { described_class.set_notifier(notifier) }
+      after { described_class.set_notifier(nil) }
+      let(:issue_data) { JSON.parse(response) }
 
       it 'fetches the issue data' do
         result = described_class.issue_data(issue_key)
         expect(result.keys).to include('fields')
+      end
+
+      it 'publish an event through the notifier' do
+        expect(notifier).to receive(:publish).with('jira_cache:fetched_issue', key: issue_key, data: issue_data)
+        described_class.issue_data(issue_key)
       end
     end
 

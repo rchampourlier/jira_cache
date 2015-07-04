@@ -1,5 +1,6 @@
 require 'httparty'
 require 'cgi'
+require 'jira_cache/notifier'
 
 module JiraCache
 
@@ -35,7 +36,9 @@ module JiraCache
         }
       )).to_hash
       return nil if issue_not_found?(issue_data)
-      complete_worklogs(id_or_key, issue_data)
+      issue_data = complete_worklogs(id_or_key, issue_data)
+      notifier.publish 'jira_cache:fetched_issue', key: id_or_key, data: issue_data
+      issue_data
     end
 
     def self.issue_keys_for_query(jql_query)
@@ -137,12 +140,27 @@ module JiraCache
       }
     end
 
+    # @param notifier [Object] the passed object must implement the notifier contract
+    #   (see `JiraCache::Notifier`).
+    def self.set_notifier(notifier)
+      @notifier = notifier
+    end
+
     def self.logger
       @logger ||= (
         logger = ::Logger.new(STDOUT)
         logger.level = config[:log_level] || ::Logger::FATAL
         logger
       )
+    end
+
+    # Returns a notifier, which will be used to send some events
+    # (currently only "jira_cache:fetched_issue").
+    # For now, this method only returns an instance of JiraCache::Notifier,
+    # which uses ActiveSupport::Notifications.
+    # @return [JiraCache::Notifier]
+    def self.notifier
+      @notifier ||= JiraCache::Notifier.new(logger)
     end
   end
 end
