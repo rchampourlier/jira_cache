@@ -1,3 +1,4 @@
+require 'thread/pool'
 require 'jira_cache/version'
 require 'jira_cache/issue'
 require 'jira_cache/project_state'
@@ -8,6 +9,7 @@ require 'jira_cache/client'
 # Currently provides a single method to perform the synchronization,
 # `JiraCache::sync_project_issues(project_key)`.
 module JiraCache
+  THREAD_POOL_SIZE = ENV['JIRA_CACHE_THREAD_POOL_SIZE'] || 5
 
   # Fetches new and updated raw issues, save them
   # to the `issues` collection. Also mark issues
@@ -69,10 +71,14 @@ module JiraCache
   module_function :fetch_issue_keys
 
   def fetch_issues(issue_keys)
+    pool = Thread.pool(THREAD_POOL_SIZE)
     issue_keys.each do |issue_key|
-      data = Client.issue_data(issue_key)
-      Issue.create_or_update data
+      pool.process do
+        data = Client.issue_data(issue_key)
+        Issue.create_or_update data
+      end
     end
+    pool.shutdown
   end
   module_function :fetch_issues
 
