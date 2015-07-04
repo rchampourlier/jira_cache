@@ -1,5 +1,5 @@
 env = ENV['JIRA_CACHE_ENV'] || 'development'
-if env == 'development'
+if env == 'development' || env == 'test'
   require 'dotenv'
   Dotenv.load
 end

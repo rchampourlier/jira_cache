@@ -2,6 +2,8 @@
 require 'rubygems'
 require 'bundler/setup'
 
+ENV['JIRA_CACHE_ENV'] = 'test'
+
 if ENV['CI']
   # Running on CI, setup Coveralls
   require 'coveralls'

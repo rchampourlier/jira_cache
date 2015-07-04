@@ -12,5 +12,5 @@ development:
 test:
   sessions:
     default:
-      uri: <%= ENV['JIRA_CACHE_MONGODB_URI'] %>-test
+      uri: <%= ENV['JIRA_CACHE_MONGODB_URI'] %>_test
       safe: true
