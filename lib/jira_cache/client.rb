@@ -8,11 +8,19 @@ module JiraCache
     include HTTParty
 
     JIRA_MAX_RESULTS = 1000
+
     EXPANDED_FIELDS = %w(
       renderedFields
       changelog
     )
-    # Other fields: names, schema, operations, editmeta
+    # Other possible fields: names, schema, operations, editmeta
+
+    # Returns the config. If the config was not set using
+    # #set_config, an exception is raised.
+    def self.config
+      fail 'Config not set. Please set config first (JiraCache::Client.config=...).' if @config.nil?
+      @config
+    end
 
     # Fetches the issue represented by id_or_key from the
     # client.
@@ -104,27 +112,35 @@ module JiraCache
         },
         verify: false
       }
-      return options if @username.blank?
+      return options if config[:username].blank?
       options.merge({
         basic_auth: {
-          username: @username,
-          password: @password
+          username: config[:username],
+          password: config[:password]
         }
       })
     end
 
-    def self.set_config(domain, username = nil, password = nil, log_level: ::Logger::FATAL)
+    # @param config [Hash] config hash, with the following key-values:
+    #   - :domain => [String] domain of the JIRA API to be requested
+    #   - :username => [String] JIRA username (optional, defaults to nil)
+    #   - :password => [String] JIRA password for the specified user (optional, default to nil)
+    #   - :log_level => [::Logger::LOG_LEVEL] (optional, defaults to Logger::FATAL)
+    def self.set_config(domain:, username: nil, password: nil, log_level: ::Logger::FATAL)
       fail 'Missing domain' if domain.blank?
       base_uri "https://#{domain}/rest/api/2"
-      @username = username
-      @password = password
-      @log_level = log_level
+      @config = {
+        domain: domain,
+        username: username,
+        password: password,
+        log_level: log_level
+      }
     end
 
     def self.logger
       @logger ||= (
         logger = ::Logger.new(STDOUT)
-        logger.level = @log_level || ::Logger::FATAL
+        logger.level = config[:log_level] || ::Logger::FATAL
         logger
       )
     end

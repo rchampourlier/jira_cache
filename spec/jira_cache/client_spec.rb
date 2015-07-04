@@ -9,7 +9,7 @@ describe JiraCache::Client do
   let(:password) { 'password' }
 
   before do
-    described_class.set_config domain, username, password
+    described_class.set_config(domain: domain, username: username, password: password)
   end
 
   describe '::issue_data(id_or_key)' do
