@@ -7,7 +7,7 @@ module JiraCache
     include Mongoid::Document
     include Mongoid::Timestamps
 
-    store_in collection: 'issues'
+    store_in collection: 'jira_cache_issues'
 
     field :key,  type: String
     field :data, type: Hash
