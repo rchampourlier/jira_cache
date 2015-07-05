@@ -57,7 +57,7 @@ Your notifier class must implement the `#publish(event_name, data)` method. See 
 Your notifier's `#publish` method will get called synchronously on every issue fetch. Your responsible of making it being processed in the background if you don't want to slow down the fetching process. Also, beware that fetchs can be performed in multiple threads concurrently (by default 5, you can override it by setting `JiraCache::THREAD_POOL_SIZE`).
 
 Currently notified events are:
-- `jira_cache::fetched_issue`
+- `fetched_issue`
 
 ## Contributing
 

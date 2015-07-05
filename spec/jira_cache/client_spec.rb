@@ -49,7 +49,7 @@ describe JiraCache::Client do
       end
 
       it 'publish an event through the notifier' do
-        expect(notifier).to receive(:publish).with('jira_cache:fetched_issue', key: issue_key, data: issue_data)
+        expect(notifier).to receive(:publish).with('fetched_issue', key: issue_key, data: issue_data)
         client.issue_data(issue_key)
       end
     end
