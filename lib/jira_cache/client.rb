@@ -49,7 +49,11 @@ module JiraCache
       ).to_hash
       return nil if issue_not_found?(issue_data)
       issue_data = complete_worklogs(id_or_key, issue_data)
-      notifier.publish 'fetched_issue', key: id_or_key, data: issue_data
+      begin
+        notifier.publish 'fetched_issue', key: id_or_key, data: issue_data
+      rescue => e
+        logger.warn "Notifier failed: #{e}"
+      end
       issue_data
     end
 
