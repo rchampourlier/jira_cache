@@ -9,7 +9,7 @@ require 'jira_cache/client'
 # Currently provides a single method to perform the synchronization,
 # `JiraCache::sync_project_issues(project_key)`.
 module JiraCache
-  THREAD_POOL_SIZE = ENV['JIRA_CACHE_THREAD_POOL_SIZE'] || 5
+  THREAD_POOL_SIZE = ENV['JIRA_CACHE_THREAD_POOL_SIZE'] || 100
 
   # Fetches new and updated raw issues, save them
   # to the `issues` collection. Also mark issues
