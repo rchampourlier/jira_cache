@@ -19,8 +19,12 @@ module JiraCache
     end
 
     # Simply logs the event name and data.
+    # @param event_name [String] e.g. "fetched_issue"
+    # @param data [Hash]
+    #   - :key [String] issue key
+    #   - :data [Hash] issue data
     def publish(event_name, data = nil)
-      @logger.info "[#{event_name}] #{data}"
+      @logger.info "[#{event_name}] #{data[:key]}"
     end
   end
 end
