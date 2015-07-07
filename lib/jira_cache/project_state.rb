@@ -5,7 +5,7 @@ module JiraCache
   # Per-proejct document storing project's state (in particular sync time).
   class ProjectState
     include Mongoid::Document
-    store_in collection: 'project_states'
+    store_in collection: 'jira_cache_project_states'
 
     field :project_key, type: String
     field :synced_at, type: Time
