@@ -6,7 +6,7 @@ This allows you to build applications performing complex operations on a large n
 
 [![Build Status](https://travis-ci.org/rchampourlier/jira_cache.svg)](https://travis-ci.org/rchampourlier/jira_cache)
 [![Code Climate](https://codeclimate.com/github/rchampourlier/jira_cache/badges/gpa.svg)](https://codeclimate.com/github/rchampourlier/jira_cache)
-[![Coverage Status](https://coveralls.io/repos/rchampourlier/jira_cache/badge.svg?branch=master)](https://coveralls.io/r/rchampourlier/jira_cache?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/rchampourlier/jira_cache/badge.svg?branch=master)](https://coveralls.io/github/rchampourlier/jira_cache?branch=master)
 
 ## Installation
 
