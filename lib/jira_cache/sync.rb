@@ -4,7 +4,7 @@ require 'jira_cache/client'
 
 module JiraCache
   module Sync
-    THREAD_POOL_SIZE = ENV['JIRA_CACHE_THREAD_POOL_SIZE'] || 100
+    THREAD_POOL_SIZE = (ENV['JIRA_CACHE_THREAD_POOL_SIZE'] || 100).to_i
 
     # Fetches new and updated raw issues, save them
     # to the `issues` collection. Also mark issues
