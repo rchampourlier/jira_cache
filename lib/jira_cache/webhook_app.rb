@@ -24,7 +24,7 @@ module JiraCache
       issue_key = data['issue']['key']
 
       case (webhook_event = data['webhookEvent'])
-      when 'jira:issue_created', 'jira:issue_updated'
+      when 'jira:issue_created', 'jira:issue_updated', 'jira:worklog_updated'
         JiraCache::Sync.sync_issue(client, issue_key)
       when 'jira:issue_deleted'
         JiraCache::Sync.mark_deleted([issue_key])
