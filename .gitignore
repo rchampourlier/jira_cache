@@ -2,7 +2,6 @@
 /.yardoc
 /Gemfile.lock
 /_yardoc/
-/bin/run
 /coverage/
 /doc/
 /pkg/
