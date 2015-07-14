@@ -52,7 +52,8 @@ module JiraCache
       begin
         notifier.publish 'fetched_issue', key: id_or_key, data: issue_data
       rescue => e
-        logger.warn "Notifier failed: #{e}"
+        logger.critical "Notifier failed: #{e}"
+        logger.critical e.caller
       end
       issue_data
     end
