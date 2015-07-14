@@ -143,5 +143,13 @@ module JiraCache
       logger.level = ::Logger::FATAL
       logger
     end
+
+    # Returns an hash of info on the client
+    def info
+      {
+        domain: @domain,
+        username: @username
+      }
+    end
   end
 end

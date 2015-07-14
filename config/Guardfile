@@ -25,3 +25,9 @@ guard :rspec, cmd: 'bundle exec rspec' do
   ruby = dsl.ruby
   dsl.watch_spec_files_for(ruby.lib_files)
 end
+
+group :server do
+  guard :shotgun do
+    watch(/.+/) # watch *every* file in the directory
+  end
+end

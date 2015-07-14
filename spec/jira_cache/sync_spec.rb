@@ -20,7 +20,7 @@ describe JiraCache::Sync do
   let(:updated_keys) { %w(c) }
   let(:last_sync_time) { Time.now }
 
-  describe '::run(client, project_key)' do
+  describe '::sync_project_issues(client, project_key)' do
 
     before do
       expect(described_class)
@@ -39,17 +39,17 @@ describe JiraCache::Sync do
 
     it 'fetches new and updated issues' do
       expect(described_class).to receive(:fetch_issues).with(client, %w(a b c))
-      described_class.run(client, project_key)
+      described_class.sync_project_issues(client, project_key)
     end
 
     it 'marks deleted issues' do
       expect(described_class).to receive(:mark_deleted).with(%w(e f))
-      described_class.run(client, project_key)
+      described_class.sync_project_issues(client, project_key)
     end
 
     it 'updates the last sync time' do
       expect(described_class.last_sync_time(project_key)).to be_nil
-      described_class.run(client, project_key)
+      described_class.sync_project_issues(client, project_key)
       time = described_class.last_sync_time(project_key)
       expect(time).not_to be_nil
       expect(time).to be >= Time.now - 10.seconds

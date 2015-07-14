@@ -11,7 +11,7 @@ module JiraCache
     # deleted from JIRA as such.
     #
     # @param project_key [String] the JIRA project key
-    def run(client, project_key)
+    def sync_project_issues(client, project_key)
       sync_start = Time.now
 
       remote = remote_keys(client, project_key)
@@ -26,7 +26,13 @@ module JiraCache
 
       synced_project!(project_key, sync_start)
     end
-    module_function :run
+    module_function :sync_project_issues
+
+    def sync_issue(client, issue_key)
+      data = client.issue_data(issue_key)
+      Issue.create_or_update data
+    end
+    module_function :sync_issue
 
     # IMPLEMENTATION FUNCTIONS
 
@@ -69,8 +75,7 @@ module JiraCache
       pool = Thread.pool(THREAD_POOL_SIZE)
       issue_keys.each do |issue_key|
         pool.process do
-          data = client.issue_data(issue_key)
-          Issue.create_or_update data
+          sync_issue(client, issue_key)
         end
       end
       pool.shutdown
