@@ -19,13 +19,38 @@ describe JiraCache::Issue do
 
   describe '::deleted_from_jira!(issue_key)' do
     let(:key) { 'key' }
-    let(:doc) { described_class.create(key: key, data: data1) }
 
-    it 'should set "deleted_from_jira_at" to current time' do
-      expect(doc.deleted_from_jira_at).to be_nil
-      described_class.deleted_from_jira!(key)
-      doc.reload
-      expect(doc.deleted_from_jira_at > 1.minute.ago).to be true
+    context 'not deleted' do
+      let(:doc) do
+        described_class.create(
+          key: key,
+          data: data1
+        )
+      end
+
+      it 'sets "deleted_from_jira_at" to current time' do
+        expect(doc.deleted_from_jira_at).to be_nil
+        described_class.deleted_from_jira!(key)
+        doc.reload
+        expect(doc.deleted_from_jira_at > 1.minute.ago).to be true
+      end
+    end
+
+    context 'already deleted' do
+      let(:doc) do
+        described_class.create(
+          key: key,
+          data: data1,
+          deleted_from_jira_at: Time.now - 1.hour
+        )
+      end
+
+      it 'doesn\'t change "deleted_from_jira_at"' do
+        expect(doc.deleted_from_jira_at).not_to be_nil
+        expect {
+          described_class.deleted_from_jira!(key)
+        }.not_to change { doc.reload.deleted_from_jira_at }
+      end
     end
   end
 

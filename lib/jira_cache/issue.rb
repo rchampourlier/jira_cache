@@ -29,8 +29,10 @@ module JiraCache
 
     def self.deleted_from_jira!(issue_key)
       issue = find_by_key(issue_key)
-      issue.deleted_from_jira_at = Time.now
-      issue.save!
+      unless issue.deleted_from_jira_at.present?
+        issue.deleted_from_jira_at = Time.now
+        issue.save!
+      end
     end
 
     # @param project_key [String] key of the JIRA project
