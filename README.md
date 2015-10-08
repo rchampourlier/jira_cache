@@ -44,7 +44,7 @@ JiraCache.sync_issue(client, 'PROJECT_KEY')
 
 ### Getting notified on sync events
 
-When you trigger a project sync with `JiraCache.sync_issues(<project_key>)`,
+When you trigger a project sync with `JiraCache.sync_project_issues(<project_key>)`,
 you can get notifications on every issue fetched by providing a notifier
 instance to `JiraCache::Client`:
 

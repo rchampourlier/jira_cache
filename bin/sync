@@ -19,7 +19,7 @@ client = JiraCache::Client.new(
   logger: logger,
   notifier: JiraCache::Notifier.new(logger)
 )
-JiraCache.sync_issues(client, ENV['JIRA_CACHE_JIRA_PROJECT_KEY'])
+JiraCache.sync_project_issues(client, ENV['JIRA_CACHE_JIRA_PROJECT_KEY'])
 
 require 'pry'
 Pry.start

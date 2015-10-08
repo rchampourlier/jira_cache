@@ -9,10 +9,15 @@ require 'jira_cache/webhook_app'
 # `JiraCache::sync_project_issues(project_key)`.
 module JiraCache
 
-  def sync_issues(client, project_key)
+  def sync_project_issues(client, project_key)
     Sync.sync_project_issues(client, project_key)
   end
-  module_function :sync_issues
+  module_function :sync_project_issues
+
+  def sync_issue(client, issue_key)
+    Sync.sync_issue(client, issue_key)
+  end
+  module_function :sync_issue
 
   # @param client [JiraCache::Client]
   def webhook_app(client)
