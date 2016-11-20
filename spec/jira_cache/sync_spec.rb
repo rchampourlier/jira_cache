@@ -52,7 +52,7 @@ describe JiraCache::Sync do
 
     it "stores issues with the sync time" do
       described_class.sync_project_issues(client, project_key)
-      expect(JiraCache::Data::IssueRepository.latest_sync_time).to eq(latest_sync_time)
+      expect(JiraCache::Data::IssueRepository.latest_sync_time).to be_within(1).of latest_sync_time
     end
   end
 

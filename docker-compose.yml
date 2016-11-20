@@ -4,7 +4,7 @@ services:
   pg-dev:
     env_file:
       - .env.development
-    image: postgres:9.5
+    image: postgres:9.4
     ports:
       - "5432:5432"
     volumes:
@@ -12,7 +12,7 @@ services:
   pg-test:
     env_file:
       - .env.test
-    image: postgres:9.5
+    image: postgres:9.4
     ports:
       - "5433:5432"
     volumes:
