@@ -5,7 +5,7 @@ before_install: gem install bundler
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
 services:
-  - postgresql: "9.5"
+  - postgresql
 env:
   global:
     - APP_ENV=test
