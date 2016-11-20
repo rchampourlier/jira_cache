@@ -1,0 +1,25 @@
+version: '2'
+
+services:
+  pg-dev:
+    env_file:
+      - .env.development
+    image: postgres:9.5
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-dev-data:/var/lib/postgresql/data
+  pg-test:
+    env_file:
+      - .env.test
+    image: postgres:9.5
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg-test-data:/var/lib/postgresql/data
+
+volumes:
+  pg-dev-data:
+    driver: local
+  pg-test-data:
+    driver: local

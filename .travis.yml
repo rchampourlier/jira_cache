@@ -1,10 +1,10 @@
 language: ruby
 rvm:
-  - 2.2.3
-before_install: gem install bundler -v 1.10.3
+  - 2.3.1
+before_install: gem install bundler
 services:
   - mongodb
 env:
   global:
-    - JIRA_CACHE_ENV=test
+    - APP_ENV=test
     - JIRA_CACHE_MONGODB_URI=mongodb://127.0.0.1:27017/jira_cache
