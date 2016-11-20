@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+if [ "$RACK_ENV" == "production" ]
+then
+  psql $DATABASE_URL
+else
+  export $(cat .env.development | xargs) && psql $DATABASE_URL
+fi
