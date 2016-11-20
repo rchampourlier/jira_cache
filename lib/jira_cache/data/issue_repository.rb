@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-require "data"
+require "jira_cache/data"
 require "active_support/inflector"
 
 module JiraCache
@@ -63,7 +63,8 @@ module JiraCache
       end
 
       def self.keys_for_deleted_issues
-        table.where("deleted_from_jira_at IS NOT NULL")
+        table
+          .where("deleted_from_jira_at IS NOT NULL")
           .select(:key)
           .map(&:values)
           .flatten

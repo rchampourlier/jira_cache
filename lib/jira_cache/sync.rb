@@ -1,6 +1,6 @@
 # frozen_string_literal: true
-require "data/issue_repository"
-require "client"
+require "jira_cache/data/issue_repository"
+require "jira_cache/client"
 
 module JiraCache
 

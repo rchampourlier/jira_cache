@@ -24,8 +24,8 @@ Dir[File.expand_path("../support/**/*.rb", __FILE__)].each { |f| require(f) }
 
 # Database setup, teardown and cleanup during tests
 require "sequel/extensions/migration"
-require "data"
-require "data/issue_repository"
+require "jira_cache/data"
+require "jira_cache/data/issue_repository"
 client = JiraCache::Data::DB
 
 MIGRATIONS_DIR = File.expand_path("../../config/db_migrations", __FILE__)
@@ -44,4 +44,4 @@ RSpec.configure do |config|
   end
 end
 
-require "lib/jira_cache"
+require "jira_cache"

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require "spec_helper"
 require "timecop"
-require "data/issue_repository"
+require "jira_cache/data/issue_repository"
 
 describe JiraCache::Data::IssueRepository do
   let(:time) { Time.now }

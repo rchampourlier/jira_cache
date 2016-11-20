@@ -8,5 +8,4 @@ end
 root_dir = File.expand_path("../..", __FILE__)
 $LOAD_PATH.unshift root_dir
 $LOAD_PATH.unshift File.join(root_dir, "lib")
-$LOAD_PATH.unshift File.join(root_dir, "lib", "jira_cache")
 require "jira_cache"
