@@ -62,6 +62,13 @@ module JiraCache
         table.order(:synced_at).select(:synced_at).last&.dig(:synced_at)
       end
 
+      def self.keys_for_deleted_issues
+        table.where("deleted_from_jira_at IS NOT NULL")
+          .select(:key)
+          .map(&:values)
+          .flatten
+      end
+
       def self.row(attributes, time = nil)
         time ||= Time.now
         attributes.merge(
