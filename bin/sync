@@ -1,22 +1,23 @@
 #!/usr/bin/env ruby
 
 # Load dependencies
-require 'rubygems'
-require 'bundler/setup'
+require "rubygems"
+require "bundler/setup"
+require "logger"
 
-$LOAD_PATH.unshift File.expand_path('../..', __FILE__)
-require 'config/boot'
+$LOAD_PATH.unshift File.expand_path("../..", __FILE__)
+require "config/boot"
 
-require 'jira_cache/client'
-require 'jira_cache/notifier'
+require "jira_cache/client"
+require "jira_cache/notifier"
 
 logger = Logger.new(STDOUT)
 logger.level = Logger::DEBUG
 client = JiraCache::Client.new(
-  domain: ENV['JIRA_DOMAIN'],
-  username: ENV['JIRA_USERNAME'],
-  password: ENV['JIRA_PASSWORD'],
+  domain: ENV["JIRA_DOMAIN"],
+  username: ENV["JIRA_USERNAME"],
+  password: ENV["JIRA_PASSWORD"],
   logger: logger,
   notifier: JiraCache::Notifier.new(logger)
 )
-JiraCache.sync_project_issues(client, ENV['JIRA_PROJECT_KEY'])
+JiraCache.sync_project_issues(client, ENV["JIRA_PROJECT_KEY"])
