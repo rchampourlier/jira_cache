@@ -38,6 +38,22 @@ module JiraCache
         table.where("(data ->> 'project') = ?", project_key).select(:key).map(&:values).flatten
       end
 
+      def self.keys_for_non_deleted_issues
+        table
+          .where("deleted_from_jira_at IS NULL")
+          .select(:key)
+          .map(&:values)
+          .flatten
+      end
+
+      def self.keys_for_deleted_issues
+        table
+          .where("deleted_from_jira_at IS NOT NULL")
+          .select(:key)
+          .map(&:values)
+          .flatten
+      end
+
       def self.delete_where(where_data)
         table.where(where_data).delete
       end
@@ -60,14 +76,6 @@ module JiraCache
 
       def self.latest_sync_time
         table.order(:synced_at).select(:synced_at).last&.dig(:synced_at)
-      end
-
-      def self.keys_for_deleted_issues
-        table
-          .where("deleted_from_jira_at IS NOT NULL")
-          .select(:key)
-          .map(&:values)
-          .flatten
       end
 
       def self.row(attributes, time = nil)
