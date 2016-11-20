@@ -6,6 +6,10 @@ module JiraCache
 
   # Performs the sync between JIRA and the local database
   # where the issues are cached.
+  #
+  # The issues are cached in the database through the
+  # Data::IssueRepository interface. It currently implements
+  # storage into a PostgreSQL database.
   class Sync
     class << self
       THREAD_POOL_SIZE = (ENV["THREAD_POOL_SIZE"] || 100).to_i

@@ -1,9 +1,15 @@
-require 'thread/pool'
-require 'jira_cache/version'
-require 'jira_cache/sync'
-require 'jira_cache/webhook_app'
+require "thread/pool"
+require "jira_cache/version"
+require "jira_cache/sync"
+require "jira_cache/webhook_app"
 
-# Facility to store/cache JIRA issues data in a MongoDB datastore.
+# JiraCache enables storing JIRA issues fetched from the API
+# in a local storage for easier and faster processing.
+#
+# This is the main module and it provides some high level
+# methods to either trigger a full project sync, a single
+# issue sync or start a Sinatra webhook app to trigger sync
+# on JIRA"s webhooks.
 module JiraCache
 
   def sync_project_issues(client, project_key)

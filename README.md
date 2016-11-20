@@ -1,8 +1,6 @@
 # JiraCache
 
-Fetches data from JIRA and caches it in a MongoDB store.
-
-This allows you to build applications performing complex operations on a large number of JIRA content without the JIRA's API latency.
+JiraCache enables storing JIRA issues fetched from the API in a local storage for easier and faster processing. This allows you to build applications performing complex operations on a large number of JIRA content without the JIRA's API latency.
 
 [![Build Status](https://travis-ci.org/rchampourlier/jira_cache.svg)](https://travis-ci.org/rchampourlier/jira_cache)
 [![Code Climate](https://codeclimate.com/github/rchampourlier/jira_cache/badges/gpa.svg)](https://codeclimate.com/github/rchampourlier/jira_cache)
