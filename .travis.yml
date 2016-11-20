@@ -3,8 +3,8 @@ rvm:
   - 2.3.1
 before_install: gem install bundler
 services:
-  - mongodb
+  - postgresql: "9.5"
 env:
   global:
     - APP_ENV=test
-    - JIRA_CACHE_MONGODB_URI=mongodb://127.0.0.1:27017/jira_cache
+    - DATABASE_URL=postgres://localhost:5432/travis_ci_test

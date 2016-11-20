@@ -1,11 +1,12 @@
-env = ENV['JIRA_CACHE_ENV'] || 'development'
-if env == 'development' || env == 'test'
-  require 'dotenv'
-  Dotenv.load
+# frozen_string_literal: true
+env = ENV["APP_ENV"] || "development"
+if env == "development" || env == "test"
+  require "dotenv"
+  Dotenv.load(".env.#{env}")
 end
 
-root_dir = File.expand_path('../..', __FILE__)
+root_dir = File.expand_path("../..", __FILE__)
 $LOAD_PATH.unshift root_dir
-$LOAD_PATH.unshift File.join(root_dir, 'lib')
-require 'config/mongo'
-require 'jira_cache'
+$LOAD_PATH.unshift File.join(root_dir, "lib")
+$LOAD_PATH.unshift File.join(root_dir, "lib", "jira_cache")
+require "jira_cache"

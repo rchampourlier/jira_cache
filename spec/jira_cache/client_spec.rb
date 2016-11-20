@@ -1,12 +1,13 @@
-require 'spec_helper'
-require 'jira_cache/client'
-require 'support/response_fixture'
-require 'webmock/rspec'
+# frozen_string_literal: true
+require "spec_helper"
+require "jira_cache/client"
+require "support/response_fixture"
+require "webmock/rspec"
 
 describe JiraCache::Client do
-  let(:domain) { 'example.com' }
-  let(:username) { 'username' }
-  let(:password) { 'password' }
+  let(:domain) { "example.com" }
+  let(:username) { "username" }
+  let(:password) { "password" }
   let(:notifier) { nil }
 
   let(:client) do
@@ -18,21 +19,27 @@ describe JiraCache::Client do
     )
   end
 
-  describe '#issue_data(id_or_key)' do
-    let(:response) { ResponseFixture.get("get_issue_#{issue_key}")}
-    let(:headers) { { 'Content-Type' => 'application/json' } }
-    let(:url) { "https://#{username}:#{password}@#{domain}/rest/api/2/issue/#{issue_key}" }
-    let(:url_query) { '?expand=renderedFields,changelog' }
+  describe "#issue_data(id_or_key)" do
+    let(:response) { ResponseFixture.get("get_issue_#{issue_key}") }
+    let(:headers) do
+      {
+        "Content-Type" => "application/json",
+        "Authorization" => "Basic dXNlcm5hbWU6cGFzc3dvcmQ="
+      }
+    end
+    let(:url) { "https://#{domain}/rest/api/2/issue/#{issue_key}" }
+    let(:url_query) { "?expand=renderedFields,changelog" }
+
     before do
       stub_request(:get, "#{url}#{url_query}")
         .with(headers: headers)
         .to_return(status: 200, body: response, headers: headers)
     end
 
-    context 'issue not found' do
-      let(:issue_key) { 'not_found' }
+    context "issue not found" do
+      let(:issue_key) { "not_found" }
 
-      it 'returns nil' do
+      it "returns nil" do
         result = client.issue_data(issue_key)
         expect(result).to be_nil
       end
@@ -69,16 +76,16 @@ describe JiraCache::Client do
     end
   end
 
-  describe '#issue_keys_for_query(jql_query)' do
+  describe "#issue_keys_for_query(jql_query)" do
 
-    context 'single request query' do
+    context "single request query" do
       let(:jql_query) { 'project="single_request"' }
       # let(:jql_query) { 'project="JT"' }
 
-      it 'returns ids from the query results' do
-        url = "https://#{username}:#{password}@#{domain}/rest/api/2/search"
+      it "returns ids from the query results" do
+        url = "https://#{domain}/rest/api/2/search"
         url_query = "?fields=id&jql=#{jql_query}&maxResults=1000&startAt=0"
-        headers = { 'Content-Type' => 'application/json' }
+        headers = { "Content-Type" => "application/json" }
         response = ResponseFixture.get('get_issue_keys_jql_query_project="single_request"_start_at_0')
 
         stub_request(:get, "#{url}#{url_query}")
@@ -90,15 +97,15 @@ describe JiraCache::Client do
       end
     end
 
-    context 'query spanning over multiple requests' do
+    context "query spanning over multiple requests" do
       let(:jql_query) { 'project="multiple_requests"' }
 
-      it 'returns ids from the multiple requests' do
-        url = "https://#{username}:#{password}@#{domain}/rest/api/2/search"
+      it "returns ids from the multiple requests" do
+        url = "https://#{domain}/rest/api/2/search"
         url_query_1 = "?fields=id&jql=#{jql_query}&maxResults=1000&startAt=0"
         url_query_2 = "?fields=id&jql=#{jql_query}&maxResults=1000&startAt=5"
         url_query_3 = "?fields=id&jql=#{jql_query}&maxResults=1000&startAt=10"
-        headers = { 'Content-Type' => 'application/json' }
+        headers = { "Content-Type" => "application/json" }
 
         response_fixture_prefix = 'get_issue_keys_jql_query_project="multiple_requests"_start_at_'
         response_1 = ResponseFixture.get("#{response_fixture_prefix}0")
