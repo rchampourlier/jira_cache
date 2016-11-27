@@ -12,7 +12,7 @@ require "jira_cache/client"
 require "jira_cache/notifier"
 
 logger = Logger.new(STDOUT)
-logger.level = Logger::DEBUG
+logger.level = Logger.const_get(ENV['JIRA_LOG_LEVEL'].to_sym)
 client = JiraCache::Client.new(
   domain: ENV["JIRA_DOMAIN"],
   username: ENV["JIRA_USERNAME"],
