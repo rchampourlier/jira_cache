@@ -33,7 +33,7 @@ module JiraCache
         mark_deleted(deleted)
       end
 
-      def sync_issue(client, key, sync_time)
+      def sync_issue(client, key, sync_time: Time.now)
         data = client.issue_data(key)
         Data::IssueRepository.insert(
           key: key,
@@ -76,13 +76,9 @@ module JiraCache
       # @param client [JiraCache::Client]
       # @param issue_keys [Array] array of strings representing the JIRA keys
       def fetch_issues(client, issue_keys, sync_time)
-        pool = Thread.pool(THREAD_POOL_SIZE)
         issue_keys.each do |issue_key|
-          pool.process do
-            sync_issue(client, issue_key, sync_time)
-          end
+          sync_issue(client, issue_key, sync_time: sync_time)
         end
-        pool.shutdown
       end
 
       def mark_deleted(issue_keys)

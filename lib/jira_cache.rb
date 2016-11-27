@@ -1,4 +1,3 @@
-require "thread/pool"
 require "jira_cache/version"
 require "jira_cache/sync"
 require "jira_cache/webhook_app"
