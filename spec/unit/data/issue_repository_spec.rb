@@ -5,9 +5,9 @@ require "jira_cache/data/issue_repository"
 
 describe JiraCache::Data::IssueRepository do
   let(:time) { Time.now }
-  let(:issue1_data) { { "key" => "key1", "project" => "PJ1", "value" => "value1" } }
-  let(:issue2_data) { { "key" => "key2", "project" => "PJ2", "value" => "value2" } }
-  let(:issue3_data) { { "key" => "key3", "project" => "PJ1", "value" => "value3" } }
+  let(:issue1_data) { { "key" => "key1", "fields" => { "project" => { "key" => "PJ1" } }, "value" => "value1" } }
+  let(:issue2_data) { { "key" => "key2", "fields" => { "project" => { "key" => "PJ2" } }, "value" => "value2" } }
+  let(:issue3_data) { { "key" => "key3", "fields" => { "project" => { "key" => "PJ1" } }, "value" => "value3" } }
 
   before do
     Timecop.freeze(time)

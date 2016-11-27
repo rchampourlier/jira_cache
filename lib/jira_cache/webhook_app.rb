@@ -25,9 +25,9 @@ module JiraCache
 
       case (webhook_event = data['webhookEvent'])
       when 'jira:issue_created', 'jira:issue_updated', 'jira:worklog_updated'
-        JiraCache::Sync.sync_issue(client, issue_key)
+        JiraCache::Sync.new(client).sync_issue(issue_key)
       when 'jira:issue_deleted'
-        JiraCache::Sync.mark_deleted([issue_key])
+        JiraCache::Sync.new.mark_deleted([issue_key])
       else
         fail "Unknown webhook event \"#{webhook_event}\""
       end

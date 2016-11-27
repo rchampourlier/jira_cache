@@ -12,12 +12,12 @@ require "jira_cache/webhook_app"
 module JiraCache
 
   def sync_project_issues(client, project_key)
-    Sync.sync_project_issues(client, project_key)
+    Sync.new(client).sync_project_issues(project_key)
   end
   module_function :sync_project_issues
 
   def sync_issue(client, issue_key)
-    Sync.sync_issue(client, issue_key)
+    Sync.new(client).sync_issue(issue_key)
   end
   module_function :sync_issue
 
