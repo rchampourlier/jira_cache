@@ -4,9 +4,9 @@ Style/StringLiterals:
   EnforcedStyle: double_quotes
 Style/EmptyLinesAroundBody:
   Enabled: false
-Style/EmptyLinesAroundModule:
+Style/EmptyLinesAroundModuleBody:
   Enabled: false
-Style/EmptyLinesAroundClass:
+Style/EmptyLinesAroundClassBody:
   Enabled: false
 Style/AlignParameters:
   EnforcedStyle: with_fixed_indentation
