@@ -54,7 +54,7 @@ module JiraCache
         notifier.publish "fetched_issue", key: id_or_key, data: issue_data
       rescue => e
         logger.error "Notifier failed: #{e}"
-        logger.error e.caller
+        logger.error e.backtrace
       end
       issue_data
     end
