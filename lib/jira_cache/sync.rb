@@ -11,8 +11,6 @@ module JiraCache
   # Data::IssueRepository interface. It currently implements
   # storage into a PostgreSQL database.
   class Sync
-    THREAD_POOL_SIZE = (ENV["THREAD_POOL_SIZE"] || 100).to_i
-
     attr_reader :client, :logger
 
     def initialize(client)

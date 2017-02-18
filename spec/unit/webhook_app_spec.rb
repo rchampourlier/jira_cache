@@ -1,5 +1,4 @@
-require "rspec"
-require "rack/test"
+require "spec_helper"
 require "jira_cache/webhook_app"
 require "json"
 
