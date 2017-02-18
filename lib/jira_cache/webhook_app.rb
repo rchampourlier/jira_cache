@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require "sinatra/base"
 require "json"
+require "event_train"
 require "jira_cache/sync"
 
 module JiraCache
@@ -21,9 +22,14 @@ module JiraCache
     # POST /
     # Endpoint for JIRA webhook
     post "/" do
-      client = self.class.client
       request.body.rewind # in case it was already read
       data = JSON.parse(request.body.read)
+      EventTrain.publish(event_name: :jira_cache_webhook_received, event_data: data)
+      default_response
+    end
+
+    def process_data(data)
+      client = self.class.client
       issue_key = data["issue"]["key"]
 
       case (webhook_event = data["webhookEvent"])
