@@ -27,6 +27,11 @@ Or install it yourself as:
 Inside of `bin/console`:
 
 ```ruby
+# Basic usage (relies on environment variables to configure the client,
+# see .env.example for details)
+JiraCache.sync_issue('ISSUE_KEY')
+
+# Using customized client and logger
 logger = Logger.new(STDOUT)
 logger.level = Logger::DEBUG
 client = JiraCache::Client.new(
@@ -35,7 +40,7 @@ client = JiraCache::Client.new(
   password: 'password',
   logger: logger
 )
-JiraCache.sync_issue(client, 'PROJECT_KEY')
+JiraCache.sync_issue('ISSUE_KEY', client: client)
 ```
 
 ## Advanced use
