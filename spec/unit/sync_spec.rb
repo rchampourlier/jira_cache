@@ -69,7 +69,7 @@ describe JiraCache::Sync do
     it "fetches keys from cached issues" do
       expect(JiraCache::Data::IssueRepository)
         .to receive(:keys_in_project)
-        .with(project_key: project_key)
+        .with(project_key)
       subject.cached_keys(project_key: project_key)
     end
   end
