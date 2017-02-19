@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require "spec_helper"
 require "timecop"
+require "jira_cache/sync"
 
 describe JiraCache::Sync do
 

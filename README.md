@@ -2,7 +2,7 @@
 
 JiraCache enables storing JIRA issues fetched from the API in a local storage for easier and faster processing. This allows you to build applications performing complex operations on a large number of JIRA content without the JIRA's API latency.
 
-[![Build Status](https://travis-ci.org/rchampourlier/jira_cache.svg)](https://travis-ci.org/rchampourlier/jira_cache)
+[![Build Status](https://travis-ci.org/rchampourlier/jira_cache.svg?branch=master)](https://travis-ci.org/rchampourlier/jira_cache)
 [![Code Climate](https://codeclimate.com/github/rchampourlier/jira_cache/badges/gpa.svg)](https://codeclimate.com/github/rchampourlier/jira_cache)
 [![Coverage Status](https://coveralls.io/repos/github/rchampourlier/jira_cache/badge.svg?branch=master)](https://coveralls.io/github/rchampourlier/jira_cache?branch=master)
 
