@@ -11,13 +11,4 @@ require "config/boot"
 require "jira_cache/client"
 require "jira_cache/notifier"
 
-logger = Logger.new(STDOUT)
-logger.level = Logger.const_get(ENV['JIRA_LOG_LEVEL'].to_sym)
-client = JiraCache::Client.new(
-  domain: ENV["JIRA_DOMAIN"],
-  username: ENV["JIRA_USERNAME"],
-  password: ENV["JIRA_PASSWORD"],
-  logger: logger,
-  notifier: JiraCache::Notifier.new(logger)
-)
-JiraCache.sync_project_issues(client, ENV["JIRA_PROJECT_KEY"])
+JiraCache.sync_issues(project_key: ENV["JIRA_PROJECT_KEY"])

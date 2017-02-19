@@ -28,14 +28,18 @@ module JiraCache
     # @param notifier [Notifier] a notifier instance that will be used to publish
     #   event notifications (see `JiraCache::Notifier` for more information)
     #
-    def initialize(domain:, username: nil, password: nil, notifier: nil, logger: nil)
+    def initialize(domain: ENV["JIRA_DOMAIN"],
+                   username: ENV["JIRA_USERNAME"],
+                   password: ENV["JIRA_PASSWORD"],
+                   notifier: default_notifier,
+                   logger: default_logger)
       check_domain!(domain)
       check_password!(username, password)
       @domain = domain
       @username = username
       @password = password
-      @logger = logger || default_logger
-      @notifier = notifier || JiraCache::Notifier.new(@logger)
+      @notifier = notifier
+      @logger = logger
     end
 
     # Fetches the issue represented by id_or_key from the
@@ -141,9 +145,15 @@ module JiraCache
     end
 
     def default_logger
-      logger = ::Logger.new(STDOUT)
-      logger.level = ::Logger::FATAL
-      logger
+      return @logger unless @logger.nil?
+      @logger = ::Logger.new(STDOUT)
+      @logger.level = ::Logger::FATAL
+      @logger
+    end
+
+    def default_notifier
+      return @notifier unless @notifier.nil?
+      @notifier = JiraCache::Notifier.new(@logger)
     end
 
     # Returns an hash of info on the client

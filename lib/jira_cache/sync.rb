@@ -23,20 +23,20 @@ module JiraCache
     # deleted from JIRA as such.
     #
     # @param project_key [String] the JIRA project key
-    def sync_project_issues(project_key)
+    def sync_issues(project_key: nil)
       sync_start = Time.now
 
       log "Determining which issues to fetch..."
-      remote = remote_keys(project_key)
+      remote = remote_keys(project_key: project_key)
       log "  - #{remote.count} remote issues"
 
-      cached = cached_keys(project_key)
+      cached = cached_keys(project_key: project_key)
       log "  - #{cached.count} cached issues"
 
       missing = remote - cached
       log "  => #{missing.count} missing issues"
 
-      updated = updated_keys(project_key)
+      updated = updated_keys(project_key: project_key)
       log "  - #{updated.count} updated issues"
 
       log "Fetching #{missing.count + updated.count} issues"
@@ -57,17 +57,17 @@ module JiraCache
 
     # IMPLEMENTATION FUNCTIONS
 
-    def remote_keys(project_key)
-      fetch_issue_keys(project_key)
+    def remote_keys(project_key: nil)
+      fetch_issue_keys(project_key: project_key)
     end
 
-    def cached_keys(project_key)
-      Data::IssueRepository.keys_in_project(project_key)
+    def cached_keys(project_key: nil)
+      Data::IssueRepository.keys_in_project(project_key: project_key)
     end
 
-    def updated_keys(project_key)
-      time = latest_sync_time(project_key)
-      fetch_issue_keys(project_key, updated_since: time)
+    def updated_keys(project_key: nil)
+      time = latest_sync_time(project_key: project_key)
+      fetch_issue_keys(project_key: project_key, updated_since: time)
     end
 
     # Fetch from JIRA
@@ -79,10 +79,12 @@ module JiraCache
     # @param project_key [String]
     # @param updated_since [Time]
     # @return [Array] array of issue keys as strings
-    def fetch_issue_keys(project_key, updated_since: nil)
-      jql_query = "project = \"#{project_key}\""
-      jql_query += " AND updatedDate > \"#{updated_since.strftime('%Y-%m-%d %H:%M')}\"" if updated_since
-      client.issue_keys_for_query jql_query
+    def fetch_issue_keys(project_key: nil, updated_since: nil)
+      query_items = []
+      query_items << "project = \"#{project_key}\"" unless project_key.nil?
+      query_items << "updatedDate > \"#{updated_since.strftime('%Y-%m-%d %H:%M')}\"" unless updated_since.nil?
+      query = query_items.join(" AND ")
+      client.issue_keys_for_query(query)
     end
 
     # @param issue_keys [Array] array of strings representing the JIRA keys

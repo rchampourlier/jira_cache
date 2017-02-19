@@ -11,18 +11,43 @@ require "jira_cache/webhook_app"
 # on JIRA"s webhooks.
 module JiraCache
 
-  def self.sync_project_issues(client, project_key)
-    Sync.new(client).sync_project_issues(project_key)
+  # Sync issues using the specified client. If a `project_key` is
+  # specified, only syncs the issues for the corresponding project.
+  def self.sync_issues(client: default_client, project_key: nil)
+    Sync.new(client).sync_issues(project_key: project_key)
   end
 
-  def self.sync_issue(client, issue_key)
+  def self.sync_issue(issue_key, client: default_client)
     Sync.new(client).sync_issue(issue_key)
   end
 
-  # @param client [JiraCache::Client]
-  def self.webhook_app(client)
+  # @param client [JiraCache::Client]: defaults to a default
+  #   client using environment variables for domain, username
+  #   and password, a logger writing to STDOUT and a default
+  #   `JiraCache::Notifier` instance as notifier.
+  def self.webhook_app(client: default_client)
     Sinatra.new(JiraCache::WebhookApp) do
       set(:client, client)
     end
+  end
+
+  def self.default_client
+    JiraCache::Client.new(
+      domain: ENV["JIRA_DOMAIN"],
+      username: ENV["JIRA_USERNAME"],
+      password: ENV["JIRA_PASSWORD"],
+      logger: default_logger,
+      notifier: default_notifier
+    )
+  end
+
+  def self.default_logger
+    logger = Logger.new(STDOUT)
+    logger.level = Logger::DEBUG
+    logger
+  end
+
+  def self.default_notifier(logger: default_logger)
+    JiraCache::Notifier.new(logger)
   end
 end
