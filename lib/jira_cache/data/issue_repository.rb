@@ -35,7 +35,19 @@ module JiraCache
       end
 
       def self.keys_in_project(project_key)
-        table.where("(data #>> '{fields,project,key}') = ?", project_key).select(:key).map(&:values).flatten
+        return keys_in_all_projects if project_key.nil?
+        table.
+          where("(data #>> '{fields,project,key}') = ?", project_key).
+          select(:key).
+          map(&:values).
+          flatten
+      end
+
+      def self.keys_in_all_projects
+        table.
+          select(:key).
+          map(&:values).
+          flatten
       end
 
       def self.keys_for_non_deleted_issues

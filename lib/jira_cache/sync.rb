@@ -62,7 +62,7 @@ module JiraCache
     end
 
     def cached_keys(project_key: nil)
-      Data::IssueRepository.keys_in_project(project_key: project_key)
+      Data::IssueRepository.keys_in_project(project_key)
     end
 
     def updated_keys(project_key: nil)

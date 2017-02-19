@@ -1,5 +1,13 @@
 # History
 
+## 2017-02-19 - 0.2.2
+
+- Fixed bug when performing a full sync.
+
+## 2017-02-19 - 0.2.1
+
+- Minor fix for gemspec.
+
 ## 2017-02-19 - 0.2.0
 
 - Supporting fetching of all issues without filtering on a specific project key.

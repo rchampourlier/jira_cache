@@ -11,4 +11,9 @@ require "config/boot"
 require "jira_cache/client"
 require "jira_cache/notifier"
 
-JiraCache.sync_issues(project_key: ENV["JIRA_PROJECT_KEY"])
+project_key = ENV["JIRA_PROJECT_KEY"]
+if project_key.nil? || project_key.empty?
+  puts "You may set the `JIRA_PROJECT_KEY` environment variable to sync issues from" \
+    "a given project only."
+end
+JiraCache.sync_issues(project_key: project_key)
